@@ -2,6 +2,6 @@
 
 git add *
 git commit -m "v0.1"
-git branch -M main
+git branch -M development
 
-git push -u origin main
+git push -u origin development

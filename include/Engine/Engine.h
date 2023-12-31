@@ -21,6 +21,7 @@ extern "C" {
 }
 
 #include "Components.h"
+#include "Debugging.h"
 #include "Library.h"
 
 #ifdef _WIN32
@@ -36,40 +37,13 @@ namespace Engine {
     extern SDL_Renderer *Renderer;
     
     // Game Environment
-    extern int MusicsArraySize;
-    extern int SoundsArraySize;
-
     extern Mix_Music **Musics;
     extern Mix_Chunk **Sounds;
 
-    // Debbuguing
-    void PrintSeparator();
-
     // Core
-    void Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz=1);
+    void Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz=1, int arr_sou_siz=1);
 
     void End();
-
-    // Components
-    class Scene {
-    public:
-        virtual ~Scene(){};
-
-        bool pause;
-        int mouse_x, mouse_y;
-        float delta;
-
-        virtual void Init() {}
-        virtual void InputDown(SDL_Keycode) {}
-        virtual void InputUp(SDL_Keycode) {}
-        virtual void MouseMotion(SDL_MouseButtonEvent) {}
-        virtual void MouseDown(SDL_MouseButtonEvent) {}
-        virtual void MouseUp(SDL_MouseButtonEvent) {}
-        virtual void Update(float delta) {}
-        virtual void Render() {}
-    };
-
-    class Group;
 }
 
 #endif

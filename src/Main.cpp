@@ -4,10 +4,10 @@
 #include <string>
 
 int main(int argc, char** argv) {
-    SDL_Window* window = SDL_CreateWindow("window_name", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+    SDL_Window* window = SDL_CreateWindow("window_name", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    Engine::Init(window, renderer, 1);
+    Engine::Init(window, renderer, 2, 0);
 
     Engine::Scene *default_scene = static_cast<Engine::GamePlay*>(std::malloc(sizeof(Engine::GamePlay)));
     new (default_scene) Engine::GamePlay();

@@ -5,27 +5,17 @@ namespace Engine {
 
     Mix_Music** Musics = nullptr;
     Mix_Chunk** Sounds = nullptr;
-
-    int MusicsArraySize;
-    int SoundsArraySize;
 }
 
-void Engine::PrintSeparator() {
-    putchar('+');
-    for (int i{0}; i < 20; ++i) {
-        putchar('-');
-    }
-    printf("+\n");
-}
-
-void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz) {
+void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz, int arr_sou_siz) {
     SDL_Init(SDL_INIT_EVERYTHING);
     Engine::Renderer = sdl_renderer;
 
-    int MusicsArraySize = arr_mus_siz;
-    int SoundsArraySize = 1;
-
-    Engine::Musics = new Mix_Music*[Engine::MusicsArraySize];
+    if (arr_mus_siz > 0)
+        Engine::Musics = new Mix_Music*[arr_mus_siz];
+    
+    if (arr_sou_siz > 0)
+        Engine::Sounds = new Mix_Chunk*[arr_sou_siz];
 
     Mix_OpenAudio(SampleRate, AudioFormat, Channels, BufferSize);
     TTF_Init();
@@ -45,30 +35,75 @@ void Engine::End() {
 
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+
+    int mus_len = 0;
+    int sou_len = 0;
+
+    if (Musics != nullptr && Musics[mus_len] != NULL)
+        mus_len++;
     
-    PrintSeparator();
-    for (int i{0}; i < MusicsArraySize; ++i) {
-        Mix_FreeMusic(Musics[i]);
-        printf("%d/%d - Free Musics...\r", i+1, MusicsArraySize);
-    } putchar('\n');
-    delete Musics;
-    PrintSeparator();
+    if (Sounds != nullptr && Sounds[mus_len] != NULL)
+        sou_len++;
     
-    for (int i{0}; i < SoundsArraySize; ++i) {
-        Mix_FreeChunk(Sounds[i]);
-        printf("%d/%d - Free Sounds...\r", i+1, SoundsArraySize);
-    } putchar('\n');
-    delete Sounds;
-    PrintSeparator();
+    printf("%d\n", sou_len);
+
+    if (mus_len != 0) {
+        Debugging::PrintSeparator();
+        for (int i{0}; i < mus_len; ++i) {
+            Mix_FreeMusic(Musics[i]);
+            printf("%d/%d - Free Musics...\r", i+1, mus_len);
+        } putchar('\n');
+        Debugging::PrintSeparator();
+    } delete Musics;
+    
+    if (sou_len != 0) {
+        for (int i{0}; i < sou_len; ++i) {
+            printf("%d/%d - Free Sounds...\r", i+1, sou_len);
+            Mix_FreeChunk(Sounds[i]);
+        } putchar('\n');
+        Debugging::PrintSeparator();
+    } delete Sounds;
 
     printf("Engine Terminate.\n");
+}
+
+// Debugging.h
+void Engine::Debugging::PrintSeparator() {
+    putchar('+');
+    for (int i{0}; i < 20; ++i) {
+        putchar('-');
     }
+    printf("+\n");
+}
+
+void Engine::Debugging::PrintLog(const char* log, Uint8 type) {
+    switch (type) {
+        case ENGINE_SUCCESS:
+            printf("\033[32m[SUCCESS] %s.\033[0m\n", log);
+        break;
+
+    case ENGINE_ERROR:
+        printf("\033[31m[ERROR] %s.\033[0m\n", log);
+        break;
+
+    case ENGINE_WARNING:
+        printf("\033[33m[WARNING] %s.\033[0m\n", log);
+        break;
+    
+    case ENGINE_LOADING:
+        printf("\033[34m[LOADING] %s.\033[0m\n", log);
+        break;
+    
+    default:
+        break;
+    }
+}
 
 // Library.h
 
 int Engine::Library::__LoadDefaultLibraries(lua_State *L) {
     luaL_openlibs(L);
-    printf("Default Libraries Loaded...\n");
+    printf("Lua: Default Libraries Loaded...\n");
 }
 
 int Engine::Library::__IsInputDown(lua_State *L) {
@@ -122,6 +157,8 @@ Engine::LuaComponent::~LuaComponent() {
 }
 
 bool Engine::LuaComponent::LoadScript(const char *path) {
+    Engine::Debugging::PrintLog(path, ENGINE_LOADING);
+    
     this->LuaState = luaL_newstate();
     Library::Register(this->LuaState);
     this->LuaRow = luaL_dofile(this->LuaState, path);
@@ -130,7 +167,7 @@ bool Engine::LuaComponent::LoadScript(const char *path) {
         std::cout << lua_tostring(this->LuaState, -1);
         return false;
     } else {
-        std::cout << "'" <<  path << "' - Success to load.\n";
+        Engine::Debugging::PrintLog("Sucess to load", 0);
         return true;
     }
 }
@@ -177,3 +214,4 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
         }
         lua_pop(this->LuaState, 2);
 }
+

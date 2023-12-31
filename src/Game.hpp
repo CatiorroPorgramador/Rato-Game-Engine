@@ -24,7 +24,6 @@ namespace Engine {
 
             // ...
             Mix_PlayMusic(Engine::Musics[BeginnersSound], -1);
-            printf("\033[31m Oi \033[0m\n");
         }
 
         void InputDown(SDL_Keycode key_code) {
@@ -52,7 +51,7 @@ namespace Engine {
         }
 
         void Render() {
-            SDL_SetRenderDrawColor(Engine::Renderer, 0, 0, 0, 255);
+            SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
             SDL_RenderFillRect(Engine::Renderer, &player.Rect);
         }
     };
