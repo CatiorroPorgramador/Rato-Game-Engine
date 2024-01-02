@@ -44,8 +44,6 @@ void Engine::End() {
     
     if (Sounds != nullptr && Sounds[mus_len] != NULL)
         sou_len++;
-    
-    printf("%d\n", sou_len);
 
     if (mus_len != 0) {
         Debugging::PrintSeparator();
@@ -100,7 +98,6 @@ void Engine::Debugging::PrintLog(const char* log, Uint8 type) {
 }
 
 // Library.h
-
 int Engine::Library::__LoadDefaultLibraries(lua_State *L) {
     luaL_openlibs(L);
     printf("Lua: Default Libraries Loaded...\n");

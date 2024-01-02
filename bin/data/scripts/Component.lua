@@ -1,7 +1,7 @@
 Engine.LoadDefaultLibraries()
 
 GameObject = {
-    Rect = {0, 0, 16, 16},
+    Rect = {0, 0, 32, 32},
     filename = 'data/Skins/common-sheet.png',
     speed = 200,
     dx = 0,

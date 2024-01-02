@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
     // Game Stuff
     bool running = true;
     Uint32 last_time = SDL_GetPerformanceCounter();
+    Uint32 f = SDL_GetPerformanceFrequency();
     Uint32 current_time, frame_time;
     float delta_time = 0.0f;
     float fps = 0.0f;
