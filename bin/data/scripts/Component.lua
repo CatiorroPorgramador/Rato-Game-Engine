@@ -1,6 +1,7 @@
 Engine.LoadDefaultLibraries()
 
 GameObject = {
+    Alive = true,
     Rect = {0, 0, 32, 32},
     filename = 'data/Skins/common-sheet.png',
     speed = 200,
@@ -8,7 +9,7 @@ GameObject = {
     dy = 0,
 
     Init = function(self)
-        Engine.GetCollisionTable('toma');
+
     end,
 
     Update = function(self, dt)
@@ -27,6 +28,11 @@ GameObject = {
             dx = -self.speed * dt
         else
             dx = 0
+        end
+
+        if Engine.HasCollisionInGroup('Test') then
+            self.Alive = false
+            print('mora')
         end
         
         -- Apply

@@ -5,6 +5,8 @@ namespace Engine {
 
     Mix_Music** Musics = nullptr;
     Mix_Chunk** Sounds = nullptr;
+
+    std::unordered_map<std::string, Group> CurrentGroups;
 }
 
 void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz, int arr_sou_siz) {
@@ -39,10 +41,10 @@ void Engine::End() {
     int mus_len = 0;
     int sou_len = 0;
 
-    if (Musics != nullptr && Musics[mus_len] != NULL)
+    while (Musics != nullptr && Musics[mus_len] != NULL)
         mus_len++;
     
-    if (Sounds != nullptr && Sounds[mus_len] != NULL)
+    while (Sounds != nullptr && Sounds[mus_len] != NULL)
         sou_len++;
 
     if (mus_len != 0) {
@@ -52,7 +54,7 @@ void Engine::End() {
             printf("%d/%d - Free Musics...\r", i+1, mus_len);
         } putchar('\n');
         Debugging::PrintSeparator();
-    } delete Musics;
+    } delete[] Musics;
     
     if (sou_len != 0) {
         for (int i{0}; i < sou_len; ++i) {
@@ -60,7 +62,7 @@ void Engine::End() {
             Mix_FreeChunk(Sounds[i]);
         } putchar('\n');
         Debugging::PrintSeparator();
-    } delete Sounds;
+    } delete[] Sounds;
 
     printf("Engine Terminate.\n");
 }
@@ -111,10 +113,45 @@ int Engine::Library::__IsInputDown(lua_State *L) {
     return 1;
 }
 
-int Engine::Library::__GetCollisionTable(lua_State *L) {
-    printf("Get Collide in %s\n", luaL_checkstring(L, 1));
+int Engine::Library::__HasCollisionInGroup(lua_State *L) {
+    SDL_Rect tmp_rct;
 
-    return 1;
+    lua_getglobal(L, "GameObject");
+    if (lua_istable(L, -1)) {
+        lua_pushstring(L, "Rect");
+        lua_gettable(L, -2);
+        if (lua_istable(L, -1)) {
+            lua_rawgeti(L, -1, 1);
+            tmp_rct.x = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+
+            lua_rawgeti(L, -1, 2);
+            tmp_rct.y = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+            
+            lua_rawgeti(L, -1, 3);
+            tmp_rct.w = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+            
+            lua_rawgeti(L, -1, 4);
+            tmp_rct.h = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+        }
+    }
+    lua_pop(L, 2);
+
+    auto it = CurrentGroups.find(luaL_checkstring(L, 1));
+    if (it != CurrentGroups.end()) {
+        if (it->second.CheckCollision(&tmp_rct)) {
+            lua_pushboolean(L, true);
+        }
+    } else {
+        Engine::Debugging::PrintLog("Non Found Group", ENGINE_ERROR);
+
+        lua_pushboolean(L, false);
+    }
+
+    return 0;
 }
 
 void Engine::Library::Register(lua_State *L) {
@@ -189,6 +226,10 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
             lua_pushnumber(this->LuaState, delta_time);
             lua_pcall(this->LuaState, 2, 0, 0);
 
+            lua_getfield(this->LuaState, -1, "Alive");
+            this->Alive = lua_toboolean(this->LuaState, -1);
+            lua_pop(this->LuaState, 1);
+
             lua_pushstring(this->LuaState, "Rect");
             lua_gettable(this->LuaState, -2);
             if (lua_istable(this->LuaState, -1)) {
@@ -212,3 +253,29 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
         lua_pop(this->LuaState, 2);
 }
 
+// Group:Class
+Engine::Group::Group() {
+    
+}
+
+void Engine::Group::Update() {
+    // Remover componentes marcados como !Alive
+    this->Components.erase(std::remove_if(this->Components.begin(), this->Components.end(),
+        [](const auto &cmp) { return !cmp->Alive; }), this->Components.end());
+}
+
+void Engine::Group::Render() {
+    for (const auto &slf_cmp : this->Components) {
+        SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
+        SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
+    }
+}
+
+bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
+    for (const auto &slf_cmp : this->Components) {
+        if (SDL_HasIntersection(&slf_cmp->Rect, ComponentRect)) {
+            return true;
+        }
+    }
+    return false;
+}

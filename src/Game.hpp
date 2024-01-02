@@ -7,11 +7,17 @@ namespace Engine {
 
     class GamePlay : public Engine::Scene {
         // Enviroment
+        Group player_group, test_group;
+
         LuaComponent player;
+
+        GameComponent test;
 
     public:
         GamePlay() {
+            player_group.Components.push_back(&player);
 
+            test_group.Components.push_back(&test);
         }
         ~GamePlay() {}
 
@@ -21,6 +27,16 @@ namespace Engine {
 
             player.LoadScript("data/scripts/Component.lua");
             player.ScriptInit();
+
+            test.Rect = SDL_Rect {400, 0, 50, 50};
+
+            Engine::CurrentGroups["Player"] = player_group;
+            Engine::CurrentGroups["Test"] = test_group;
+
+            for (const auto& pair : Engine::CurrentGroups) {
+            const std::string& key = pair.first;
+            const Group& group = pair.second;
+        }
 
             // ...
             Mix_PlayMusic(Engine::Musics[BeginnersSound], -1);
@@ -47,12 +63,15 @@ namespace Engine {
         }
 
         void Update(float delta_time) {
+            player_group.Update();
+            test_group.Update();
+
             player.ScriptUpdate(delta_time);
         }
 
         void Render() {
-            SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(Engine::Renderer, &player.Rect);
+            player_group.Render();
+            test_group.Render();
         }
     };
 

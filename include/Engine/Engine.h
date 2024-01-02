@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include <unordered_map>
 
 #include <SDL2/SDL.h>

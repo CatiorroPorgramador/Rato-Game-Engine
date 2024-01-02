@@ -7,12 +7,12 @@ namespace Engine {
 
         int __IsInputDown(lua_State *L);
 
-        int __GetCollisionTable(lua_State *L);
+        int __HasCollisionInGroup(lua_State *L);
 
         static const struct luaL_Reg Engine [] = {
             {"LoadDefaultLibraries", __LoadDefaultLibraries},
             {"IsInputDown", __IsInputDown},
-            {"GetCollisionTable", __GetCollisionTable},
+            {"HasCollisionInGroup", __HasCollisionInGroup},
             {NULL, NULL}
         };
 
