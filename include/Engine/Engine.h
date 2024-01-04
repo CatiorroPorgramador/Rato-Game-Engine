@@ -38,6 +38,8 @@ namespace Engine {
     extern SDL_Renderer *Renderer;
     
     // Game Environment
+    extern std::vector<SDL_Texture*> TexturesIDs;
+
     extern Mix_Music **Musics;
     extern Mix_Chunk **Sounds;
 

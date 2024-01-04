@@ -34,9 +34,9 @@ namespace Engine {
             Engine::CurrentGroups["Test"] = test_group;
 
             for (const auto& pair : Engine::CurrentGroups) {
-            const std::string& key = pair.first;
-            const Group& group = pair.second;
-        }
+                const std::string& key = pair.first;
+                const Group& group = pair.second;
+            }
 
             // ...
             Mix_PlayMusic(Engine::Musics[BeginnersSound], -1);

@@ -1,8 +1,11 @@
 #include "Engine.h"
 
+SDL_Surface *tmp_sur;
+
 namespace Engine {
     SDL_Renderer* Renderer = nullptr;
 
+    std::vector<SDL_Texture*> TexturesIDs;
     Mix_Music** Musics = nullptr;
     Mix_Chunk** Sounds = nullptr;
 
@@ -30,6 +33,8 @@ void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mu
 }
 
 void Engine::End() {
+    SDL_FreeSurface(tmp_sur);
+
     SDL_Quit();
     SDL_DestroyRenderer(Engine::Renderer);
     Mix_CloseAudio();
@@ -41,11 +46,20 @@ void Engine::End() {
     int mus_len = 0;
     int sou_len = 0;
 
-    while (Musics != nullptr && Musics[mus_len] != NULL)
+    while (Musics != nullptr && Musics[mus_len] != NULL) {
         mus_len++;
+    }
     
-    while (Sounds != nullptr && Sounds[mus_len] != NULL)
+    while (Sounds != nullptr && Sounds[mus_len] != NULL) {
         sou_len++;
+    }
+
+    Debugging::PrintSeparator();
+    for (int i{0}; i < TexturesIDs.size(); ++i) {
+        SDL_DestroyTexture(TexturesIDs[i]);
+        printf("%d/%d - Free Textures...\r", i+1, TexturesIDs.size());
+    } putchar('\n');
+    Debugging::PrintSeparator();
 
     if (mus_len != 0) {
         Debugging::PrintSeparator();
@@ -142,16 +156,26 @@ int Engine::Library::__HasCollisionInGroup(lua_State *L) {
 
     auto it = CurrentGroups.find(luaL_checkstring(L, 1));
     if (it != CurrentGroups.end()) {
-        if (it->second.CheckCollision(&tmp_rct)) {
-            lua_pushboolean(L, true);
-        }
+        lua_pushboolean(L, it->second.CheckCollision(&tmp_rct));
     } else {
         Engine::Debugging::PrintLog("Non Found Group", ENGINE_ERROR);
 
         lua_pushboolean(L, false);
     }
 
-    return 0;
+    return 1;
+}
+
+int Engine::Library::__EmitSignalToComponent(lua_State *L) {
+    
+}
+
+int Engine::Library::__LoadTextureID(lua_State *L) {
+    tmp_sur = IMG_Load(luaL_checkstring(L, 1));
+    TexturesIDs.push_back(SDL_CreateTextureFromSurface(Engine::Renderer, tmp_sur));
+
+    lua_pushinteger(L, TexturesIDs.size()-1);
+    return 1;
 }
 
 void Engine::Library::Register(lua_State *L) {
@@ -214,7 +238,7 @@ void Engine::LuaComponent::ScriptInit() {
         lua_pcall(this->LuaState, 1, 0, 0);
         lua_pop(this->LuaState, 1);
     }
-    lua_pop(this->LuaState, 2);
+    lua_pop(this->LuaState, 1);
 }
 
 void Engine::LuaComponent::ScriptUpdate(float delta_time) {

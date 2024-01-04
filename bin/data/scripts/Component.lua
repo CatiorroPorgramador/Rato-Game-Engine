@@ -3,36 +3,35 @@ Engine.LoadDefaultLibraries()
 GameObject = {
     Alive = true,
     Rect = {0, 0, 32, 32},
-    filename = 'data/Skins/common-sheet.png',
+    TextureID = Engine.LoadTextureID('data/player-sheet.png'),
     speed = 200,
     dx = 0,
     dy = 0,
 
     Init = function(self)
-
+        print(self.TextureID)
     end,
 
     Update = function(self, dt)
+        if Engine.HasCollisionInGroup('Test') then
+            self.Alive = false
+        end
+
         -- Movement Keys
         if Engine.IsInputDown(Engine.KeyW) then
-            dy = -self.speed * dt
+            self.dy = -self.speed * dt
         elseif Engine.IsInputDown(Engine.KeyS) then
-            dy = self.speed * dt
+            self.dy = self.speed * dt
         else
-            dy = 0
+            self.dy = 0
         end
         
         if Engine.IsInputDown(Engine.KeyD) then
-            dx = self.speed * dt
+            self.dx = self.speed * dt
         elseif Engine.IsInputDown(Engine.KeyA) then
-            dx = -self.speed * dt
+            self.dx = -self.speed * dt
         else
-            dx = 0
-        end
-
-        if Engine.HasCollisionInGroup('Test') then
-            self.Alive = false
-            print('mora')
+            self.dx = 0
         end
         
         -- Apply
