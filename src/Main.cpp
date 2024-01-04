@@ -25,6 +25,9 @@ int main(int argc, char** argv) {
 
     clock_t start = clock();
 
+
+    bool test;
+
     while(running){
         current_time = SDL_GetPerformanceCounter();
         frame_time = current_time - last_time;
@@ -70,18 +73,18 @@ int main(int argc, char** argv) {
         
         default_scene->Render();
 
-        // ImGui_ImplSDLRenderer2_NewFrame();
-        // ImGui_ImplSDL2_NewFrame();
-        // ImGui::NewFrame();
+        ImGui_ImplSDLRenderer2_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
 
-        // ImGui::Begin("SDL2 com Dear ImGui");
-        // ImGui::Text("Isso é só um Olá Mundo básico");
-        // ImGui::Button("This Button");
-        // ImGui::End();
+        ImGui::Begin("SDL2 com Dear ImGui");
+        ImGui::Text("Isso é só um Olá Mundo básico");
+        ImGui::Checkbox("YES", &test);
+        ImGui::End();
 
-        // ImGui::Render();
+        ImGui::Render();
 
-        // ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
         // Debbuug
         SDL_RenderPresent(renderer);

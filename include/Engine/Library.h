@@ -12,7 +12,7 @@ namespace Engine {
         int __EmitSignalToComponent(lua_State *L);
 
         int __LoadTextureID(lua_State *L);
-
+        
         static const struct luaL_Reg Engine [] = {
             {"LoadDefaultLibraries", __LoadDefaultLibraries},
             {"IsInputDown", __IsInputDown},

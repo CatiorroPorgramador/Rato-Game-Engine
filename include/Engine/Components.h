@@ -6,6 +6,8 @@ namespace Engine {
     public:
         bool Alive;
 
+        Uint16 TextureID;
+
         SDL_Rect Rect;
 
         GameComponent() {

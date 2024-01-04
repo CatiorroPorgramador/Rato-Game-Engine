@@ -4,6 +4,7 @@ GameObject = {
     Alive = true,
     Rect = {0, 0, 32, 32},
     TextureID = Engine.LoadTextureID('data/player-sheet.png'),
+    
     speed = 200,
     dx = 0,
     dy = 0,
@@ -35,7 +36,7 @@ GameObject = {
         end
         
         -- Apply
-        self.Rect[1] = self.Rect[1] + dx
-        self.Rect[2] = self.Rect[2] + dy
+        self.Rect[1] = self.Rect[1] + self.dx
+        self.Rect[2] = self.Rect[2] + self.dy
     end
 }

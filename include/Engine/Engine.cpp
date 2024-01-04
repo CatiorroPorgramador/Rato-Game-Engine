@@ -254,6 +254,10 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
             this->Alive = lua_toboolean(this->LuaState, -1);
             lua_pop(this->LuaState, 1);
 
+            lua_getfield(this->LuaState, -1, "Alive");
+            this->Alive = lua_toboolean(this->LuaState, -1);
+            lua_pop(this->LuaState, 1);
+
             lua_pushstring(this->LuaState, "Rect");
             lua_gettable(this->LuaState, -2);
             if (lua_istable(this->LuaState, -1)) {
