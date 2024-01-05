@@ -7,26 +7,21 @@ int main(int argc, char** argv) {
     SDL_Window* window = SDL_CreateWindow("window_name", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    Engine::Init(window, renderer, 2, 0);
+    Engine::Init(window, renderer);
 
-    Engine::Scene *default_scene = static_cast<Engine::GamePlay*>(std::malloc(sizeof(Engine::GamePlay)));
-    new (default_scene) Engine::GamePlay();
-
+    Engine::Scene *default_scene = new Engine::GamePlay();
     default_scene->Init();
     
     // Game Stuff
     bool running = true;
     Uint32 last_time = SDL_GetPerformanceCounter();
-    Uint32 f = SDL_GetPerformanceFrequency();
     Uint32 current_time, frame_time;
     float delta_time = 0.0f;
+    float wait_time = 32.f;
     float fps = 0.0f;
     SDL_Event event;
 
     clock_t start = clock();
-
-
-    bool test;
 
     while(running){
         current_time = SDL_GetPerformanceCounter();
@@ -34,6 +29,8 @@ int main(int argc, char** argv) {
 
         delta_time = frame_time / (float) SDL_GetPerformanceFrequency();
         last_time = current_time;
+
+        fps = 10000000.0f / static_cast<float>(frame_time);
 
         // Events
         while(SDL_PollEvent(&event)) {
@@ -78,8 +75,8 @@ int main(int argc, char** argv) {
         ImGui::NewFrame();
 
         ImGui::Begin("SDL2 com Dear ImGui");
-        ImGui::Text("Isso é só um Olá Mundo básico");
-        ImGui::Checkbox("YES", &test);
+        ImGui::InputFloat("Wait Time", &wait_time);
+        ImGui::Text("%d Fps", static_cast<int>(fps));
         ImGui::End();
 
         ImGui::Render();
@@ -88,12 +85,12 @@ int main(int argc, char** argv) {
 
         // Debbuug
         SDL_RenderPresent(renderer);
-        SDL_Delay(16);
+        SDL_Delay(wait_time);
     }
 
     SDL_DestroyWindow(window);
 
-    free(default_scene);
+    delete default_scene;
 
     Engine::End();
 

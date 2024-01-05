@@ -16,14 +16,13 @@ namespace Engine {
     public:
         GamePlay() {
             player_group.Components.push_back(&player);
-
             test_group.Components.push_back(&test);
         }
         ~GamePlay() {}
 
         void Init() {
             // Game Environment
-            Engine::Musics[0] = Mix_LoadMUS("data/sounds/Beginner's Sound.mp3");
+            Engine::Musics.push_back(Mix_LoadMUS("data/sounds/Beginner's Sound.mp3"));
 
             player.LoadScript("data/scripts/Component.lua");
             player.ScriptInit();
@@ -32,11 +31,6 @@ namespace Engine {
 
             Engine::CurrentGroups["Player"] = player_group;
             Engine::CurrentGroups["Test"] = test_group;
-
-            for (const auto& pair : Engine::CurrentGroups) {
-                const std::string& key = pair.first;
-                const Group& group = pair.second;
-            }
 
             // ...
             Mix_PlayMusic(Engine::Musics[BeginnersSound], -1);

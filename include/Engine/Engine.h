@@ -30,21 +30,21 @@ extern "C" {
 #endif
 
 namespace Engine {
-    constexpr int SampleRate = 22050;
+    constexpr int SampleRate = 11025;
     constexpr int Channels = 1;
     constexpr int BufferSize = 4096;
-    constexpr Uint16 AudioFormat = AUDIO_S16SYS;
+    constexpr Uint16 AudioFormat = AUDIO_U16SYS;
 
     extern SDL_Renderer *Renderer;
     
     // Game Environment
     extern std::vector<SDL_Texture*> TexturesIDs;
 
-    extern Mix_Music **Musics;
-    extern Mix_Chunk **Sounds;
+    extern std::vector<Mix_Music*> Musics;
+    extern std::vector<Mix_Chunk*> Sounds;
 
     // Core
-    void Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz=1, int arr_sou_siz=1);
+    void Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer);
 
     void End();
 }

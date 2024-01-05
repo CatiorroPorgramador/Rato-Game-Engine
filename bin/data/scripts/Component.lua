@@ -3,6 +3,7 @@ Engine.LoadDefaultLibraries()
 GameObject = {
     Alive = true,
     Rect = {0, 0, 32, 32},
+    SrcRect = {16, 16, 16, 16},
     TextureID = Engine.LoadTextureID('data/player-sheet.png'),
     
     speed = 200,
@@ -10,12 +11,14 @@ GameObject = {
     dy = 0,
 
     Init = function(self)
-        print(self.TextureID)
+        
     end,
 
     Update = function(self, dt)
+
         if Engine.HasCollisionInGroup('Test') then
             self.Alive = false
+            print('colidiu')
         end
 
         -- Movement Keys

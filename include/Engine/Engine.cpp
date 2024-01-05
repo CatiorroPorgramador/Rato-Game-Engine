@@ -6,21 +6,16 @@ namespace Engine {
     SDL_Renderer* Renderer = nullptr;
 
     std::vector<SDL_Texture*> TexturesIDs;
-    Mix_Music** Musics = nullptr;
-    Mix_Chunk** Sounds = nullptr;
+    
+    std::vector<Mix_Music*> Musics;
+    std::vector<Mix_Chunk*> Sounds;
 
     std::unordered_map<std::string, Group> CurrentGroups;
 }
 
-void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer, int arr_mus_siz, int arr_sou_siz) {
+void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer) {
     SDL_Init(SDL_INIT_EVERYTHING);
     Engine::Renderer = sdl_renderer;
-
-    if (arr_mus_siz > 0)
-        Engine::Musics = new Mix_Music*[arr_mus_siz];
-    
-    if (arr_sou_siz > 0)
-        Engine::Sounds = new Mix_Chunk*[arr_sou_siz];
 
     Mix_OpenAudio(SampleRate, AudioFormat, Channels, BufferSize);
     TTF_Init();
@@ -43,17 +38,6 @@ void Engine::End() {
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 
-    int mus_len = 0;
-    int sou_len = 0;
-
-    while (Musics != nullptr && Musics[mus_len] != NULL) {
-        mus_len++;
-    }
-    
-    while (Sounds != nullptr && Sounds[mus_len] != NULL) {
-        sou_len++;
-    }
-
     Debugging::PrintSeparator();
     for (int i{0}; i < TexturesIDs.size(); ++i) {
         SDL_DestroyTexture(TexturesIDs[i]);
@@ -61,22 +45,17 @@ void Engine::End() {
     } putchar('\n');
     Debugging::PrintSeparator();
 
-    if (mus_len != 0) {
-        Debugging::PrintSeparator();
-        for (int i{0}; i < mus_len; ++i) {
-            Mix_FreeMusic(Musics[i]);
-            printf("%d/%d - Free Musics...\r", i+1, mus_len);
-        } putchar('\n');
-        Debugging::PrintSeparator();
-    } delete[] Musics;
+    for (int i{0}; i < Musics.size(); ++i) {
+        Mix_FreeMusic(Musics[i]);
+        printf("%d/%d - Free Musics...\r", i+1, Musics.size());
+    } putchar('\n');
+    Debugging::PrintSeparator();
     
-    if (sou_len != 0) {
-        for (int i{0}; i < sou_len; ++i) {
-            printf("%d/%d - Free Sounds...\r", i+1, sou_len);
-            Mix_FreeChunk(Sounds[i]);
-        } putchar('\n');
-        Debugging::PrintSeparator();
-    } delete[] Sounds;
+    for (int i{0}; i < Sounds.size(); ++i) {
+        printf("%d/%d - Free Sounds...\r", i+1, Sounds.size());
+        Mix_FreeChunk(Sounds[i]);
+    } putchar('\n');
+    Debugging::PrintSeparator();
 
     printf("Engine Terminate.\n");
 }
@@ -254,8 +233,8 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
             this->Alive = lua_toboolean(this->LuaState, -1);
             lua_pop(this->LuaState, 1);
 
-            lua_getfield(this->LuaState, -1, "Alive");
-            this->Alive = lua_toboolean(this->LuaState, -1);
+            lua_getfield(this->LuaState, -1, "TextureID");
+            this->TextureID = lua_tointeger(this->LuaState, -1);
             lua_pop(this->LuaState, 1);
 
             lua_pushstring(this->LuaState, "Rect");
@@ -288,14 +267,21 @@ Engine::Group::Group() {
 
 void Engine::Group::Update() {
     // Remover componentes marcados como !Alive
-    this->Components.erase(std::remove_if(this->Components.begin(), this->Components.end(),
-        [](const auto &cmp) { return !cmp->Alive; }), this->Components.end());
+    this->Components.erase(std::remove_if(this->Components.begin(), this->Components.end(), [](const auto &cmp) { return !cmp->Alive; }), this->Components.end());
+
+    for (const auto &Component : this->Components) {
+        Component->Update();
+    }
 }
 
 void Engine::Group::Render() {
     for (const auto &slf_cmp : this->Components) {
-        SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
+        if (slf_cmp->TextureID != -1) {
+            SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], NULL, &slf_cmp->Rect);
+        } else {
+            SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
+            SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
+        }
     }
 }
 

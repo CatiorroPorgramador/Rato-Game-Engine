@@ -5,10 +5,9 @@ namespace Engine {
     class GameComponent {
     public:
         bool Alive;
+        int TextureID = -1;
 
-        Uint16 TextureID;
-
-        SDL_Rect Rect;
+        SDL_Rect Rect, SrcRect;
 
         GameComponent() {
             this->Alive = true;
@@ -17,6 +16,9 @@ namespace Engine {
         ~GameComponent() {
             
         }
+
+        virtual void Update() {}
+        virtual void Render() {}
     };
 
     class LuaComponent : public GameComponent {
