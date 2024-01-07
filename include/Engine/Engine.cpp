@@ -186,6 +186,7 @@ Engine::LuaComponent::LuaComponent(const char* path) {
 }
 
 Engine::LuaComponent::LuaComponent() {
+    this->SrcRect = SDL_Rect {0, 0, 16, 16};
     this->Rect = SDL_Rect {0, 0, 0, 0};
 }
 
@@ -256,6 +257,27 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
                 Rect.h = lua_tonumber(this->LuaState, -1);
                 lua_pop(this->LuaState, 1);
             }
+            lua_pop(this->LuaState, 1);
+
+            lua_pushstring(this->LuaState, "SrcRect");
+            lua_gettable(this->LuaState, -2);
+            if (lua_istable(this->LuaState, -1)) {
+                lua_rawgeti(this->LuaState, -1, 1);
+                SrcRect.x = lua_tonumber(this->LuaState, -1);
+                lua_pop(this->LuaState, 1);
+
+                lua_rawgeti(this->LuaState, -1, 2);
+                SrcRect.y = lua_tonumber(this->LuaState, -1);
+                lua_pop(this->LuaState, 1);
+                
+                lua_rawgeti(this->LuaState, -1, 3);
+                SrcRect.w = lua_tonumber(this->LuaState, -1);
+                lua_pop(this->LuaState, 1);
+                
+                lua_rawgeti(this->LuaState, -1, 4);
+                SrcRect.h = lua_tonumber(this->LuaState, -1);
+                lua_pop(this->LuaState, 1);
+            }
         }
         lua_pop(this->LuaState, 2);
 }
@@ -277,7 +299,9 @@ void Engine::Group::Update() {
 void Engine::Group::Render() {
     for (const auto &slf_cmp : this->Components) {
         if (slf_cmp->TextureID != -1) {
-            SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], NULL, &slf_cmp->Rect);
+            SDL_SetRenderDrawColor(Engine::Renderer, 10, 10, 10, SDL_ALPHA_TRANSPARENT);
+            SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
+            SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], &slf_cmp->SrcRect, &slf_cmp->Rect);
         } else {
             SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
             SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
@@ -292,4 +316,54 @@ bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
         }
     }
     return false;
+}
+
+// AnimationManager:Class
+Engine::AnimationManager::AnimationManager(SDL_Rect* sheet) {
+    this->s = sheet;
+}
+
+void Engine::AnimationManager::Update() {
+    if (p) {
+        i++;
+        if (i > as) {
+            this->Finished = true;
+            this->f = this->anim[fr];
+            this->fr++;             // To get next point of vector Anim
+            this->i = 0;
+            this->s->x = this->f*this->jmp;
+        }
+        if (fr > anim.size()) { // Animation Finished
+            this->Finished = this->Name;
+            this->p = this->Loop; // if loop is true, continue animation 
+            this->fr = 0;
+            this->f = this->anim[fr];
+            this->i = 0;
+            this->s->x = this->f*this->jmp; 
+        }
+    }
+}
+
+void Engine::AnimationManager::Play(const char* name) {
+    if (std::string(name) != this->name) {
+        this->p = true;
+        this->anim = anims[name];
+        this->name = std::string(name);
+    }
+}
+
+void Engine::AnimationManager::Stop() {
+    this->Name = "";
+    this->p = false;
+    this->i = 0;
+    this->fr = 0;
+    this->f = 0;
+}
+
+void Engine::AnimationManager::CreateAnimation(const char* name, std::vector<int_fast8_t> frames) {
+    anims.insert(std::make_pair(this->Name, this->frames));
+}
+
+void Engine::AnimationManager::SetAnimationSpeed(int_fast16_t speed) {
+    if (as != speed) as = speed;
 }

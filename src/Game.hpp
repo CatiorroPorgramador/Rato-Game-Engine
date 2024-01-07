@@ -23,6 +23,7 @@ namespace Engine {
         void Init() {
             // Game Environment
             Engine::Musics.push_back(Mix_LoadMUS("data/sounds/Beginner's Sound.mp3"));
+            Mix_VolumeMusic(2);
 
             player.LoadScript("data/scripts/Component.lua");
             player.ScriptInit();

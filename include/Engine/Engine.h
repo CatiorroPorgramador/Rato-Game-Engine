@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <windows.h>
 #include <algorithm>
 #include <unordered_map>
 
