@@ -67,12 +67,12 @@ int main(int argc, char** argv) {
 
         SDL_SetRenderDrawColor(renderer, 25, 25, 25, 255);
         SDL_RenderClear(renderer);
-        
-        default_scene->Render();
 
         ImGui_ImplSDLRenderer2_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
+
+        default_scene->Render();
 
         ImGui::Begin("SDL2 com Dear ImGui");
         ImGui::InputFloat("Wait Time", &wait_time);

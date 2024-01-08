@@ -17,7 +17,8 @@ namespace Engine {
             
         }
 
-        virtual void Update() {}
+        virtual void Init() {}
+        virtual void Update(float delta_time) {}
         virtual void Render() {}
     };
 
@@ -47,7 +48,7 @@ namespace Engine {
 
         Group();
 
-        void Update();
+        void Update(float delta_time);
         void Render();
 
         bool CheckCollision(SDL_Rect*);
@@ -76,7 +77,7 @@ namespace Engine {
     public:
         AnimationManager(SDL_Rect* sheet);
 
-        void Update();
+        void Update(float delta_time);
 
         void Play(const char* name);
 
@@ -87,17 +88,17 @@ namespace Engine {
         void SetAnimationSpeed(int_fast16_t speed);
 
         std::string Finished;
-        bool Loop = true;
+        bool Loop;
 
         std::string Name;
 
-    private:
+    //private:
         bool p = false; // Playing Some Animation
-        int_fast16_t i = 0; // Animation Index
+        float i = 0; // Animation Index
         int_fast16_t as = 30; // Animation Speed
 
         int_fast8_t f = 0;  // Animation Frame, Index Animation
-        int_fast8_t fr = 0; // Reference Animatoin Frame
+        int_fast8_t fr = 0; // Reference Animation Frame
         int_fast8_t jmp = 16; // Size of unique sprite to jump
         std::vector<int_fast8_t> anim;
 

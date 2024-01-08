@@ -259,6 +259,7 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
             }
             lua_pop(this->LuaState, 1);
 
+
             lua_pushstring(this->LuaState, "SrcRect");
             lua_gettable(this->LuaState, -2);
             if (lua_istable(this->LuaState, -1)) {
@@ -287,12 +288,12 @@ Engine::Group::Group() {
     
 }
 
-void Engine::Group::Update() {
+void Engine::Group::Update(float delta_time) {
     // Remover componentes marcados como !Alive
     this->Components.erase(std::remove_if(this->Components.begin(), this->Components.end(), [](const auto &cmp) { return !cmp->Alive; }), this->Components.end());
 
     for (const auto &Component : this->Components) {
-        Component->Update();
+        Component->Update(delta_time);
     }
 }
 
@@ -321,17 +322,19 @@ bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
 // AnimationManager:Class
 Engine::AnimationManager::AnimationManager(SDL_Rect* sheet) {
     this->s = sheet;
+    this->Loop = false;
 }
 
-void Engine::AnimationManager::Update() {
+void Engine::AnimationManager::Update(float delta_time) {
     if (p) {
-        i++;
-        if (i > as) {
-            this->Finished = true;
+        i += 1 * (delta_time);
+        if (static_cast<int_fast16_t>(i) >= as) {
+            printf("%d\n", static_cast<int>(i));
             this->f = this->anim[fr];
             this->fr++;             // To get next point of vector Anim
-            this->i = 0;
+
             this->s->x = this->f*this->jmp;
+            this->i = 0;
         }
         if (fr > anim.size()) { // Animation Finished
             this->Finished = this->Name;
@@ -345,10 +348,10 @@ void Engine::AnimationManager::Update() {
 }
 
 void Engine::AnimationManager::Play(const char* name) {
-    if (std::string(name) != this->name) {
+    if (std::string(name) != this->Name) {
         this->p = true;
         this->anim = anims[name];
-        this->name = std::string(name);
+        this->Name = std::string(name);
     }
 }
 
@@ -360,8 +363,8 @@ void Engine::AnimationManager::Stop() {
     this->f = 0;
 }
 
-void Engine::AnimationManager::CreateAnimation(const char* name, std::vector<int_fast8_t> frames) {
-    anims.insert(std::make_pair(this->Name, this->frames));
+void Engine::AnimationManager::CreateAnimation(const char *name, std::vector<int_fast8_t> frames) {
+    anims.insert(std::make_pair(name, frames));
 }
 
 void Engine::AnimationManager::SetAnimationSpeed(int_fast16_t speed) {
