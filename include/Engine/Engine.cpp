@@ -329,20 +329,22 @@ void Engine::AnimationManager::Update(float delta_time) {
     if (p) {
         i += 1 * (delta_time);
         if (static_cast<int_fast16_t>(i) >= as) {
-            printf("%d\n", static_cast<int>(i));
+            this->fr++;
             this->f = this->anim[fr];
-            this->fr++;             // To get next point of vector Anim
+            
+            printf("%d\n", static_cast<int>(fr));
 
             this->s->x = this->f*this->jmp;
             this->i = 0;
         }
-        if (fr > anim.size()) { // Animation Finished
+        if (fr > anim.size()-1) { // Animation Finished
             this->Finished = this->Name;
             this->p = this->Loop; // if loop is true, continue animation 
             this->fr = 0;
-            this->f = this->anim[fr];
+            
             this->i = 0;
             this->s->x = this->f*this->jmp; 
+            printf("\nCABOU\n");
         }
     }
 }

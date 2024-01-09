@@ -12,10 +12,10 @@ namespace Engine {
 
         Player() {
             animation_manager = new Engine::AnimationManager(&this->SrcRect);
-            animation_manager->CreateAnimation("Vorta", {1, 2, 3, 4});
+            animation_manager->CreateAnimation("Vorta", {0, 1, 2, 3, 4});
             animation_manager->Loop = true;
             animation_manager->Play("Vorta");
-            animation_manager->SetAnimationSpeed(1);
+            animation_manager->SetAnimationSpeed(0.5);
         }
 
         ~Player() {
