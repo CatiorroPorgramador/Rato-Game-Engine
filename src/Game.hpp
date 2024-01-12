@@ -15,7 +15,7 @@ namespace Engine {
             animation_manager->CreateAnimation("Vorta", {0, 1, 2, 3, 4});
             animation_manager->Loop = true;
             animation_manager->Play("Vorta");
-            animation_manager->SetAnimationSpeed(0.5);
+            animation_manager->SetAnimationSpeed(1.0f);
         }
 
         ~Player() {
@@ -30,8 +30,6 @@ namespace Engine {
         void Update(float delta_time) override {
             this->animation_manager->Update(delta_time);
             this->ScriptUpdate(delta_time);
-
-            printf("FRAME: %d\r", animation_manager->f);
         }
     };
 
@@ -53,7 +51,7 @@ namespace Engine {
         }
         ~GamePlay() {}
 
-        void Init() {
+        void Init() override {
             // Game Environment
             Engine::Musics.push_back(Mix_LoadMUS("data/sounds/Beginner's Sound.mp3"));
             Mix_VolumeMusic(2);
@@ -67,33 +65,33 @@ namespace Engine {
             Mix_PlayMusic(Engine::Musics[BeginnersSound], -1);
         }
 
-        void InputDown(SDL_Keycode key_code) {
+        void InputDown(SDL_Keycode key_code) override {
             
         }
 
-        void InputUp(SDL_Keycode action_up) {
+        void InputUp(SDL_Keycode action_up) override {
                         
         }
 
-        virtual void MouseMotion(SDL_MouseButtonEvent mouse) {
+        virtual void MouseMotion(SDL_MouseButtonEvent mouse) override {
             
         }
 
-        virtual void MouseDown(SDL_MouseButtonEvent mouse) {
+        virtual void MouseDown(SDL_MouseButtonEvent mouse) override {
 
         }
 
-        virtual void MouseUp(SDL_MouseButtonEvent mouse) {
+        virtual void MouseUp(SDL_MouseButtonEvent mouse) override {
 
         }
 
-        void Update(float delta_time) {
+        void Update(float delta_time) override {
             player_group.Update(delta_time);
             test_group.Update(delta_time);
 
         }
 
-        void Render() {
+        void Render() override {
             player_group.Render();
             test_group.Render();
         }

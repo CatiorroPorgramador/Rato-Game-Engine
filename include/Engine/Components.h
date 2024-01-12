@@ -85,7 +85,7 @@ namespace Engine {
 
         void CreateAnimation(const char* name, std::vector<int_fast8_t> frames);
 
-        void SetAnimationSpeed(int_fast16_t speed);
+        void SetAnimationSpeed(float seconds);
 
         std::string Finished;
         bool Loop;
@@ -94,8 +94,10 @@ namespace Engine {
 
     //private:
         bool p = false; // Playing Some Animation
-        float i = 0; // Animation Index
-        int_fast16_t as = 30; // Animation Speed
+
+        Uint32 las_tim; // Last Time
+
+        float at = 1.0f; // Animation Time in ms
 
         int_fast8_t f = 0;  // Animation Frame, Index Animation
         int_fast8_t fr = 0; // Reference Animation Frame
@@ -105,6 +107,14 @@ namespace Engine {
         std::unordered_map<const char*, std::vector<int_fast8_t>> anims;
 
         SDL_Rect* s; // Sheet
+    };
+
+    class TileMap : public GameComponent {
+    public:
+        TileMap();
+        TileMap(int width, int height);
+
+        void Render() override;
     };
 
     extern std::unordered_map<std::string, Group> CurrentGroups;

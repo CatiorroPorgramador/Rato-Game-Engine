@@ -323,28 +323,28 @@ bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
 Engine::AnimationManager::AnimationManager(SDL_Rect* sheet) {
     this->s = sheet;
     this->Loop = false;
+
+    this->las_tim = SDL_GetTicks();
 }
 
 void Engine::AnimationManager::Update(float delta_time) {
     if (p) {
-        i += 1 * (delta_time);
-        if (static_cast<int_fast16_t>(i) >= as) {
+        Uint32 cur_tim = SDL_GetTicks();
+
+        if ((cur_tim - this->las_tim) >= this->at*1000.f) {
             this->fr++;
             this->f = this->anim[fr];
             
-            printf("%d\n", static_cast<int>(fr));
-
+            this->las_tim = cur_tim;
             this->s->x = this->f*this->jmp;
-            this->i = 0;
         }
         if (fr > anim.size()-1) { // Animation Finished
             this->Finished = this->Name;
             this->p = this->Loop; // if loop is true, continue animation 
             this->fr = 0;
             
-            this->i = 0;
+            this->las_tim = cur_tim;
             this->s->x = this->f*this->jmp; 
-            printf("\nCABOU\n");
         }
     }
 }
@@ -360,7 +360,7 @@ void Engine::AnimationManager::Play(const char* name) {
 void Engine::AnimationManager::Stop() {
     this->Name = "";
     this->p = false;
-    this->i = 0;
+    this->las_tim = 0;
     this->fr = 0;
     this->f = 0;
 }
@@ -369,6 +369,6 @@ void Engine::AnimationManager::CreateAnimation(const char *name, std::vector<int
     anims.insert(std::make_pair(name, frames));
 }
 
-void Engine::AnimationManager::SetAnimationSpeed(int_fast16_t speed) {
-    if (as != speed) as = speed;
+void Engine::AnimationManager::SetAnimationSpeed(float seconds) {
+    if (this->at != seconds) this->at = seconds;
 }
