@@ -11,6 +11,7 @@ namespace Engine {
     std::vector<Mix_Chunk*> Sounds;
 
     std::unordered_map<std::string, Group> CurrentGroups;
+    std::vector<Signal> Signals;
 }
 
 void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer) {
@@ -146,7 +147,7 @@ int Engine::Library::__HasCollisionInGroup(lua_State *L) {
 }
 
 int Engine::Library::__EmitSignalToComponent(lua_State *L) {
-    
+
 }
 
 int Engine::Library::__LoadTextureID(lua_State *L) {

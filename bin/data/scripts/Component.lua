@@ -11,7 +11,8 @@ GameObject = {
     dy = 0,
 
     Init = function(self)
-        
+        print(EmitSignalToComponent())
+        print('oi')
     end,
 
     Update = function(self, dt)
