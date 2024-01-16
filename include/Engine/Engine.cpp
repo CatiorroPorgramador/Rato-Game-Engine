@@ -14,6 +14,19 @@ namespace Engine {
     std::vector<Signal> Signals;
 }
 
+Engine::Any::~Any() {
+    delete this->data;
+}
+
+template <typename T>
+T Engine::Any::Cast() const {
+    if (type && *type == typeid(T)) {
+        return *static_cast<T*>(data);
+    } else {
+        throw std::bad_cast();
+    }
+}
+
 void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer) {
     SDL_Init(SDL_INIT_EVERYTHING);
     Engine::Renderer = sdl_renderer;
@@ -149,10 +162,11 @@ int Engine::Library::__HasCollisionInGroup(lua_State *L) {
 int Engine::Library::__EmitSignalToComponent(lua_State *L) {
     Engine::Signal signal;
     signal.Name = luaL_checkstring(L, 1);
+    printf("NOME: %s\n", luaL_checkstring(L, 1));
 
     switch (lua_type(L, 2)) {
         case LUA_TNIL:
-            signal.SetValue(nullptr);
+            signal.SetValue(NULL);
             break;
         case LUA_TBOOLEAN:
             signal.SetValue(lua_toboolean(L, 2));
@@ -169,7 +183,7 @@ int Engine::Library::__EmitSignalToComponent(lua_State *L) {
     }
 
     Signals.push_back(signal);
-    printf("Signal[0] = %s : %s\n", Signals[0].Name, Signals[0].GetValue());
+    printf("Signal[0] = %s : %d\n", Signals.at(0).Name, Signals.at(0).GetValue<int>());
 
     lua_pushboolean(L, true);
     return 1;
@@ -401,19 +415,14 @@ void Engine::AnimationManager::SetAnimationSpeed(float seconds) {
 
 // Signal:Class
 Engine::Signal::Signal() {
-
+    this->Name = "Undefined";
 }
 
-template <typename type>
-void Engine::Signal::SetValue(const type& value) {
-    this->data = new type(value);
+void Engine::Signal::SetValue(Engine::Any value) {
+    this->Data = value;
 }
 
-template <typename type>
-void Engine::Signal::GetValue() {
-    if (data == nullptr) {
-        throw std::runtime_error("No value stored.");
-    }
-
-    return *static_cast<type*>(data);
+template <typename type> 
+Engine::Any Engine::Signal::GetValue() {
+    return this->Data.Cast<type>();
 }

@@ -118,20 +118,17 @@ namespace Engine {
     };
 
     class Signal {
-        void *data = nullptr;
+        Engine::Any Data;
 
     public:
         Signal();
 
-        ~Signal();
-
         std::string Name;
 
-        template <typename type>
-        void SetValue(const type& value);
+        void SetValue(Engine::Any value);
 
-        template <typename type>
-        void GetValue();
+        template <typename type> 
+        Engine::Any GetValue();
 
     };
 

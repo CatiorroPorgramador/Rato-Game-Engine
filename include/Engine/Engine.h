@@ -1,9 +1,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <any>
+
 #include <vector>
 #include <string>
+#include <stdexcept>
+#include <typeinfo>
 #include <iostream>
 #include <windows.h>
 #include <algorithm>
@@ -24,6 +26,7 @@ extern "C" {
 #include "lualib.h"
 }
 
+#include "Core.h"
 #include "Components.h"
 #include "Debugging.h"
 #include "Library.h"
@@ -33,23 +36,7 @@ extern "C" {
 #endif
 
 namespace Engine {
-    constexpr int SampleRate = 11025;
-    constexpr int Channels = 1;
-    constexpr int BufferSize = 4096;
-    constexpr Uint16 AudioFormat = AUDIO_U16SYS;
 
-    extern SDL_Renderer *Renderer;
-    
-    // Game Environment
-    extern std::vector<SDL_Texture*> TexturesIDs;
-
-    extern std::vector<Mix_Music*> Musics;
-    extern std::vector<Mix_Chunk*> Sounds;
-
-    // Core
-    void Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer);
-
-    void End();
 }
 
 #endif
