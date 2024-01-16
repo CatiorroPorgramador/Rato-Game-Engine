@@ -11,7 +11,7 @@ GameObject = {
     dy = 0,
 
     Init = function(self)
-        print(EmitSignalToComponent())
+        print(Engine.EmitSignalToComponent("PlayerSpeed", 1))
         print('oi')
     end,
 

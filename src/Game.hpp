@@ -70,7 +70,7 @@ namespace Engine {
         }
 
         void InputUp(SDL_Keycode action_up) override {
-                        
+            
         }
 
         virtual void MouseMotion(SDL_MouseButtonEvent mouse) override {

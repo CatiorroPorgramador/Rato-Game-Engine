@@ -121,29 +121,17 @@ namespace Engine {
         void *data = nullptr;
 
     public:
-        Signal() {
+        Signal();
 
-        }
-
-        ~Signal() {
-            delete data;
-        }
+        ~Signal();
 
         std::string Name;
 
         template <typename type>
-        void SetValue(const type& value) {
-            data = new type(value);
-        }
+        void SetValue(const type& value);
 
         template <typename type>
-        void GetValue(const type& value) {
-            if (data == nullptr) {
-                throw std::runtime_error("No value stored.");
-            }
-
-            return *static_cast<type*>(data);
-        }
+        void GetValue();
 
     };
 

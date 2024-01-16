@@ -147,7 +147,32 @@ int Engine::Library::__HasCollisionInGroup(lua_State *L) {
 }
 
 int Engine::Library::__EmitSignalToComponent(lua_State *L) {
+    Engine::Signal signal;
+    signal.Name = luaL_checkstring(L, 1);
 
+    switch (lua_type(L, 2)) {
+        case LUA_TNIL:
+            signal.SetValue(nullptr);
+            break;
+        case LUA_TBOOLEAN:
+            signal.SetValue(lua_toboolean(L, 2));
+            break;
+        case LUA_TNUMBER:
+            signal.SetValue(luaL_checknumber(L, 2));
+            break;
+        case LUA_TSTRING:
+            signal.SetValue(luaL_checkstring(L, 2));
+            break;
+        case LUA_TTABLE:
+
+            break;
+    }
+
+    Signals.push_back(signal);
+    printf("Signal[0] = %s : %s\n", Signals[0].Name, Signals[0].GetValue());
+
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int Engine::Library::__LoadTextureID(lua_State *L) {
@@ -372,4 +397,23 @@ void Engine::AnimationManager::CreateAnimation(const char *name, std::vector<int
 
 void Engine::AnimationManager::SetAnimationSpeed(float seconds) {
     if (this->at != seconds) this->at = seconds;
+}
+
+// Signal:Class
+Engine::Signal::Signal() {
+
+}
+
+template <typename type>
+void Engine::Signal::SetValue(const type& value) {
+    this->data = new type(value);
+}
+
+template <typename type>
+void Engine::Signal::GetValue() {
+    if (data == nullptr) {
+        throw std::runtime_error("No value stored.");
+    }
+
+    return *static_cast<type*>(data);
 }
