@@ -14,19 +14,6 @@ namespace Engine {
     std::vector<Signal> Signals;
 }
 
-Engine::Any::~Any() {
-    delete this->data;
-}
-
-template <typename T>
-T Engine::Any::Cast() const {
-    if (type && *type == typeid(T)) {
-        return *static_cast<T*>(data);
-    } else {
-        throw std::bad_cast();
-    }
-}
-
 void Engine::Init(SDL_Window *sdl_window, SDL_Renderer *sdl_renderer) {
     SDL_Init(SDL_INIT_EVERYTHING);
     Engine::Renderer = sdl_renderer;
@@ -123,7 +110,7 @@ int Engine::Library::__IsInputDown(lua_State *L) {
 int Engine::Library::__HasCollisionInGroup(lua_State *L) {
     SDL_Rect tmp_rct;
 
-    lua_getglobal(L, "GameObject");
+    lua_getglobal(L, "GameComponent");
     if (lua_istable(L, -1)) {
         lua_pushstring(L, "Rect");
         lua_gettable(L, -2);
@@ -159,33 +146,74 @@ int Engine::Library::__HasCollisionInGroup(lua_State *L) {
     return 1;
 }
 
-int Engine::Library::__EmitSignalToComponent(lua_State *L) {
+int Engine::Library::__EmitSignal(lua_State *L) {
     Engine::Signal signal;
     signal.Name = luaL_checkstring(L, 1);
-    printf("NOME: %s\n", luaL_checkstring(L, 1));
 
     switch (lua_type(L, 2)) {
         case LUA_TNIL:
-            signal.SetValue(NULL);
+            signal.SetValue<int>(-1, LUA_TNIL);
             break;
         case LUA_TBOOLEAN:
-            signal.SetValue(lua_toboolean(L, 2));
+            signal.SetValue<bool>(lua_toboolean(L, 2), LUA_TBOOLEAN);
             break;
         case LUA_TNUMBER:
-            signal.SetValue(luaL_checknumber(L, 2));
+            if (lua_isinteger(L, 2))
+                signal.SetValue<int>(luaL_checkinteger(L, 2), ENGINE_LUA_INTEGER);
+            else
+                signal.SetValue<float>(luaL_checknumber(L, 2), LUA_TNUMBER);
             break;
         case LUA_TSTRING:
-            signal.SetValue(luaL_checkstring(L, 2));
+            signal.SetValue<std::string>(luaL_checkstring(L, 2), LUA_TSTRING);
             break;
         case LUA_TTABLE:
-
+            
             break;
     }
 
     Signals.push_back(signal);
-    printf("Signal[0] = %s : %d\n", Signals.at(0).Name, Signals.at(0).GetValue<int>());
 
     lua_pushboolean(L, true);
+    return 1;
+}
+
+int Engine::Library::__GetSignal(lua_State *L) {
+    Signal sgl;
+
+    for (Signal signal : Engine::Signals) {
+        if (signal.Name == luaL_checkstring(L, 1))
+            sgl = signal;
+        else
+            printf("%s\n", luaL_checkstring(L, 1));
+    }
+
+    if (sgl.Name != "Undefined") {
+        switch (sgl.LuaType) {
+        case LUA_TNIL:
+            lua_pushnil(L);
+            break;
+        
+        case LUA_TBOOLEAN:
+            lua_pushboolean(L, sgl.GetValue<bool>());
+            break;
+        
+        case ENGINE_LUA_INTEGER:
+            lua_pushinteger(L, sgl.GetValue<int>());
+            break;
+        
+        case LUA_TNUMBER:
+            lua_pushnumber(L, sgl.GetValue<float>());
+            break;
+        
+        case LUA_TSTRING:
+            lua_pushstring(L, (sgl.GetValue<std::string>()).c_str());
+            break;
+        
+        default:
+            break;
+        }
+    }
+
     return 1;
 }
 
@@ -251,7 +279,7 @@ bool Engine::LuaComponent::LoadScript(const char *path) {
 }
 
 void Engine::LuaComponent::ScriptInit() {
-    lua_getglobal(this->LuaState, "GameObject");
+    lua_getglobal(this->LuaState, "GameComponent");
     if (lua_istable(this->LuaState, -1)) {
         lua_getfield(this->LuaState, -1, "Init");
         lua_pushvalue(this->LuaState, -2);
@@ -262,7 +290,7 @@ void Engine::LuaComponent::ScriptInit() {
 }
 
 void Engine::LuaComponent::ScriptUpdate(float delta_time) {
-        lua_getglobal(this->LuaState, "GameObject");
+        lua_getglobal(this->LuaState, "GameComponent");
 
         if (lua_istable(this->LuaState, -1)) {
             lua_getfield(this->LuaState, -1, "Update");
@@ -418,11 +446,18 @@ Engine::Signal::Signal() {
     this->Name = "Undefined";
 }
 
-void Engine::Signal::SetValue(Engine::Any value) {
-    this->Data = value;
+Engine::Signal::~Signal() {
+    delete this->Data;
 }
 
-template <typename type> 
-Engine::Any Engine::Signal::GetValue() {
-    return this->Data.Cast<type>();
+template <typename Type>
+void Engine::Signal::SetValue(Type value, int LuaType) {
+    this->Data = new Type(value);
+    this->LuaType = LuaType;
+}
+
+template <typename Type>
+Type Engine::Signal::GetValue() {
+    Type *ret = static_cast<Type*>(this->Data);
+    return *ret;
 }

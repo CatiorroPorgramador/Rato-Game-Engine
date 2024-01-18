@@ -61,6 +61,8 @@ namespace Engine {
         bool Pause;
         int MouseX, MouseY;
 
+        std::string Name;
+
         std::unordered_map<std::string, Group> Groups;
 
         virtual void Init() {}
@@ -99,7 +101,7 @@ namespace Engine {
 
         float at = 1.0f; // Animation Time in ms
 
-        int_fast8_t f = 0;  // Animation Frame, Index Animation
+        int f = 0;  // Animation Frame, Index Animation
         int_fast8_t fr = 0; // Reference Animation Frame
         int_fast8_t jmp = 16; // Size of unique sprite to jump
         std::vector<int_fast8_t> anim;
@@ -118,18 +120,22 @@ namespace Engine {
     };
 
     class Signal {
-        Engine::Any Data;
+        void *Data;
 
     public:
         Signal();
 
+        ~Signal();
+
         std::string Name;
 
-        void SetValue(Engine::Any value);
+        template <typename Type>
+        void SetValue(Type, int);
+        
+        template <typename Type>
+        Type GetValue();
 
-        template <typename type> 
-        Engine::Any GetValue();
-
+        int LuaType;
     };
 
     extern std::unordered_map<std::string, Group> CurrentGroups;

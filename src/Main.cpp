@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
     Engine::Init(window, renderer);
 
     Engine::Scene *default_scene = new Engine::GamePlay();
+    default_scene->Name = "GamePlay";
     default_scene->Init();
     
     // Game Stuff
@@ -18,6 +19,7 @@ int main(int argc, char** argv) {
     float delta_time = 0.0f;
     float wait_time = 32.f;
     float fps = 0.0f;
+
     SDL_Event event;
 
     clock_t start = clock();
@@ -74,8 +76,12 @@ int main(int argc, char** argv) {
         default_scene->Render();
 
         ImGui::Begin("SDL2 com Dear ImGui");
+        ImGui::SeparatorText("Framerate");
         ImGui::InputFloat("Wait Time", &wait_time);
         ImGui::Text("%d Fps", static_cast<int>(fps));
+        ImGui::SeparatorText("Scene");
+        ImGui::Text("Current Scene: %s", default_scene->Name.c_str());
+        ImGui::Checkbox("Pause Scene", &default_scene->Pause);
         ImGui::End();
 
         ImGui::Render();

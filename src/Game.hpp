@@ -44,6 +44,7 @@ namespace Engine {
 
     public:
         GamePlay() {
+            this->Pause = false;
             player.Init();
 
             player_group.Components.push_back(&player);
@@ -86,8 +87,10 @@ namespace Engine {
         }
 
         void Update(float delta_time) override {
+            if (!this->Pause) {
             player_group.Update(delta_time);
             test_group.Update(delta_time);
+            }
 
         }
 

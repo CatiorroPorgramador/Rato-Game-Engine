@@ -3,21 +3,24 @@
 
 namespace Engine {
     namespace Library {
-        int __LoadDefaultLibraries(lua_State *L);
+        int __LoadDefaultLibraries(lua_State*);
 
-        int __IsInputDown(lua_State *L);
+        int __IsInputDown(lua_State*);
 
-        int __HasCollisionInGroup(lua_State *L);
+        int __HasCollisionInGroup(lua_State*);
 
-        int __EmitSignalToComponent(lua_State *L);
+        int __EmitSignal(lua_State*);
 
-        int __LoadTextureID(lua_State *L);
+        int __GetSignal(lua_State*);
+
+        int __LoadTextureID(lua_State*);
         
         static const struct luaL_Reg Engine [] = {
             {"LoadDefaultLibraries", __LoadDefaultLibraries},
             {"IsInputDown", __IsInputDown},
             {"HasCollisionInGroup", __HasCollisionInGroup},
-            {"EmitSignalToComponent", __EmitSignalToComponent},
+            {"EmitSignal", __EmitSignal},
+            {"GetSignal", __GetSignal},
             {"LoadTextureID", __LoadTextureID},
             {NULL, NULL}
         };

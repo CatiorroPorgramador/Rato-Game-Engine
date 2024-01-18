@@ -1,6 +1,6 @@
 Engine.LoadDefaultLibraries()
 
-GameObject = {
+GameComponent = {
     Alive = true,
     Rect = {0, 0, 64, 64},
     -- SrcRect = {32, 0, 16, 16},
@@ -11,13 +11,14 @@ GameObject = {
     dy = 0,
 
     Init = function(self)
-        print(Engine.EmitSignalToComponent("PlayerSpeed", 1))
-        print('oi')
+        Engine.EmitSignal("PlayerSpeed", 2)
+        print(Engine.GetSignal("PlayerSpeed"))
     end,
 
     Update = function(self, dt)
         if Engine.HasCollisionInGroup('Test') then
             self.Alive = false
+            print(Engine.GetSignal("PlayerSpeed"))
         end
 
         -- Movement Keys
