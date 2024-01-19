@@ -6,7 +6,8 @@ namespace Engine {
     public:
         bool Alive;
         int TextureID = -1;
-
+        
+        float DirectionX, DirectionY;
         SDL_Rect Rect, SrcRect;
 
         GameComponent() {
@@ -94,7 +95,7 @@ namespace Engine {
 
         std::string Name;
 
-    //private:
+    private:
         bool p = false; // Playing Some Animation
 
         Uint32 las_tim; // Last Time
@@ -109,6 +110,17 @@ namespace Engine {
         std::unordered_map<const char*, std::vector<int_fast8_t>> anims;
 
         SDL_Rect* s; // Sheet
+    };
+
+    class Camera {
+    public:
+        float OffSetX, OffSetY;
+        GameComponent *Pinned;
+
+        Camera();
+
+        void Update();
+        void Linear();
     };
 
     class TileMap : public GameComponent {
@@ -137,6 +149,8 @@ namespace Engine {
 
         int LuaType;
     };
+
+    extern Engine::Camera *CurrentCamera;
 
     extern std::unordered_map<std::string, Group> CurrentGroups;
     extern std::vector<Signal> Signals;

@@ -10,6 +10,8 @@ namespace Engine {
     std::vector<Mix_Music*> Musics;
     std::vector<Mix_Chunk*> Sounds;
 
+    Engine::Camera *CurrentCamera;
+
     std::unordered_map<std::string, Group> CurrentGroups;
     std::vector<Signal> Signals;
 }
@@ -306,6 +308,14 @@ void Engine::LuaComponent::ScriptUpdate(float delta_time) {
             this->TextureID = lua_tointeger(this->LuaState, -1);
             lua_pop(this->LuaState, 1);
 
+            lua_getfield(this->LuaState, -1, "DirectionX");
+            this->DirectionX = lua_tonumber(this->LuaState, -1);
+            lua_pop(this->LuaState, 1);
+
+            lua_getfield(this->LuaState, -1, "DirectionY");
+            this->DirectionY = lua_tonumber(this->LuaState, -1);
+            lua_pop(this->LuaState, 1);
+
             lua_pushstring(this->LuaState, "Rect");
             lua_gettable(this->LuaState, -2);
             if (lua_istable(this->LuaState, -1)) {
@@ -367,6 +377,11 @@ void Engine::Group::Update(float delta_time) {
 
 void Engine::Group::Render() {
     for (const auto &slf_cmp : this->Components) {
+        if (slf_cmp != Engine::CurrentCamera->Pinned) {
+            slf_cmp->Rect.x += Engine::CurrentCamera->OffSetX;
+            slf_cmp->Rect.y += Engine::CurrentCamera->OffSetY;
+        }
+
         if (slf_cmp->TextureID != -1) {
             SDL_SetRenderDrawColor(Engine::Renderer, 10, 10, 10, SDL_ALPHA_TRANSPARENT);
             SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
@@ -439,6 +454,22 @@ void Engine::AnimationManager::CreateAnimation(const char *name, std::vector<int
 
 void Engine::AnimationManager::SetAnimationSpeed(float seconds) {
     if (this->at != seconds) this->at = seconds;
+}
+
+// Camera:Class
+Engine::Camera::Camera() {
+    this->OffSetX = 0;
+    this->OffSetY = 0;
+}
+
+void Engine::Camera::Update() {
+    this->OffSetX += (int) this->Pinned->DirectionX;
+    this->OffSetY += (int) this->Pinned->DirectionY;
+}
+
+void Engine::Camera::Linear() {
+    this->OffSetX += ((this->Pinned->Rect.x) - this->OffSetX);
+    this->OffSetY += ((this->Pinned->Rect.y) - this->OffSetY);
 }
 
 // Signal:Class

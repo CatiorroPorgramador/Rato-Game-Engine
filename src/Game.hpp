@@ -38,6 +38,7 @@ namespace Engine {
         // Enviroment
         Group player_group, test_group;
 
+        Camera *camera;
         Player player;
 
         GameComponent test;
@@ -45,12 +46,20 @@ namespace Engine {
     public:
         GamePlay() {
             this->Pause = false;
+
             player.Init();
 
             player_group.Components.push_back(&player);
             test_group.Components.push_back(&test);
+
+            camera = new Camera();
+            camera->Pinned = &player;
+
+            Engine::CurrentCamera = camera;
         }
-        ~GamePlay() {}
+        ~GamePlay() {
+            delete camera;
+        }
 
         void Init() override {
             // Game Environment
@@ -90,6 +99,7 @@ namespace Engine {
             if (!this->Pause) {
             player_group.Update(delta_time);
             test_group.Update(delta_time);
+            camera->Update();
             }
 
         }

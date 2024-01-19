@@ -3,12 +3,11 @@ Engine.LoadDefaultLibraries()
 GameComponent = {
     Alive = true,
     Rect = {0, 0, 64, 64},
-    -- SrcRect = {32, 0, 16, 16},
+    DirectionX = 0,
+    DirectionY = 0,
     TextureID = Engine.LoadTextureID('data/Skins/monkey-sheet.png'),
     
-    speed = 200,
-    dx = 0,
-    dy = 0,
+    speed = 200.0,
 
     Init = function(self)
         Engine.EmitSignal("PlayerSpeed", 2)
@@ -23,23 +22,21 @@ GameComponent = {
 
         -- Movement Keys
         if Engine.IsInputDown(Engine.KeyW) then
-            self.dy = -self.speed * dt
+            self.DirectionY = -self.speed * dt
         elseif Engine.IsInputDown(Engine.KeyS) then
-            self.dy = self.speed * dt
+            self.DirectionY = self.speed * dt
         else
-            self.dy = 0
+            self.DirectionY = 0
         end
         
         if Engine.IsInputDown(Engine.KeyD) then
-            self.dx = self.speed * dt
+            self.DirectionX = self.speed * dt
         elseif Engine.IsInputDown(Engine.KeyA) then
-            self.dx = -self.speed * dt
+            self.DirectionX = -self.speed * dt
         else
-            self.dx = 0
+            self.DirectionX = 0
         end
-        
-        -- Apply
-        self.Rect[1] = self.Rect[1] + self.dx
-        self.Rect[2] = self.Rect[2] + self.dy
+
+        -- print('DirectionX: '..tostring(self.DirectionX))
     end
 }
