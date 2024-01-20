@@ -37,11 +37,9 @@ namespace Engine {
     class GamePlay : public Engine::Scene {
         // Enviroment
         Group player_group, test_group;
-
-        Camera *camera;
         Player player;
 
-        GameComponent test;
+        GameComponent test, test2;
 
     public:
         GamePlay() {
@@ -51,14 +49,11 @@ namespace Engine {
 
             player_group.Components.push_back(&player);
             test_group.Components.push_back(&test);
+            test_group.Components.push_back(&test2);
 
-            camera = new Camera();
-            camera->Pinned = &player;
-
-            Engine::CurrentCamera = camera;
+            Engine::CurrentCamera.Pinned = &player;
         }
         ~GamePlay() {
-            delete camera;
         }
 
         void Init() override {
@@ -66,7 +61,9 @@ namespace Engine {
             Engine::Musics.push_back(Mix_LoadMUS("data/sounds/Beginner's Sound.mp3"));
             Mix_VolumeMusic(2);
 
-            test.Rect = SDL_Rect {400, 0, 50, 50};
+            test.Rect = SDL_Rect {400, 0, 200, 200};
+
+            test2.Rect = SDL_Rect{0, 0, 200, 200};
 
             Engine::CurrentGroups["Player"] = player_group;
             Engine::CurrentGroups["Test"] = test_group;
@@ -99,7 +96,7 @@ namespace Engine {
             if (!this->Pause) {
             player_group.Update(delta_time);
             test_group.Update(delta_time);
-            camera->Update();
+            Engine::CurrentCamera.Update();
             }
 
         }

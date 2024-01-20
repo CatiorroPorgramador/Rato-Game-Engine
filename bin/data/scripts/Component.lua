@@ -12,6 +12,10 @@ GameComponent = {
     Init = function(self)
         Engine.EmitSignal("PlayerSpeed", 2)
         print(Engine.GetSignal("PlayerSpeed"))
+
+        self.Rect[1] = 368
+        self.Rect[2] = 268
+
     end,
 
     Update = function(self, dt)
@@ -37,6 +41,7 @@ GameComponent = {
             self.DirectionX = 0
         end
 
-        -- print('DirectionX: '..tostring(self.DirectionX))
+        -- self.Rect[1] = self.Rect[1] + self.DirectionX
+        -- self.Rect[2] = self.Rect[2] + self.DirectionY
     end
 }

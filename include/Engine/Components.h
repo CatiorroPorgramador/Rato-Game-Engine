@@ -21,6 +21,8 @@ namespace Engine {
         virtual void Init() {}
         virtual void Update(float delta_time) {}
         virtual void Render() {}
+
+        SDL_Rect GetGlobalPosition();
     };
 
     class LuaComponent : public GameComponent {
@@ -114,13 +116,13 @@ namespace Engine {
 
     class Camera {
     public:
-        float OffSetX, OffSetY;
+        float OffSetX, OffSetY, DirectionX, DirectionY;
         GameComponent *Pinned;
 
         Camera();
 
         void Update();
-        void Linear();
+        void Linear(float);
     };
 
     class TileMap : public GameComponent {
@@ -150,7 +152,7 @@ namespace Engine {
         int LuaType;
     };
 
-    extern Engine::Camera *CurrentCamera;
+    extern Engine::Camera CurrentCamera;
 
     extern std::unordered_map<std::string, Group> CurrentGroups;
     extern std::vector<Signal> Signals;

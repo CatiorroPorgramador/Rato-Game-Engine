@@ -10,7 +10,7 @@ namespace Engine {
     std::vector<Mix_Music*> Musics;
     std::vector<Mix_Chunk*> Sounds;
 
-    Engine::Camera *CurrentCamera;
+    Engine::Camera CurrentCamera;
 
     std::unordered_map<std::string, Group> CurrentGroups;
     std::vector<Signal> Signals;
@@ -250,6 +250,11 @@ void Engine::Library::Register(lua_State *L) {
 
 // Components.h
 
+// GameComponent:Class
+SDL_Rect Engine::GameComponent::GetGlobalPosition() {
+    return SDL_Rect {Engine::CurrentCamera.OffSetX + this->Rect.x, Engine::CurrentCamera.OffSetY + this->Rect.y, this->Rect.w, this->Rect.h};
+}
+
 // LuaComponent:Class
 Engine::LuaComponent::LuaComponent(const char* path) {
     this->LoadScript(path);
@@ -377,25 +382,31 @@ void Engine::Group::Update(float delta_time) {
 
 void Engine::Group::Render() {
     for (const auto &slf_cmp : this->Components) {
-        if (slf_cmp != Engine::CurrentCamera->Pinned) {
-            slf_cmp->Rect.x += Engine::CurrentCamera->OffSetX;
-            slf_cmp->Rect.y += Engine::CurrentCamera->OffSetY;
+        SDL_Rect tmp;
+
+        if (slf_cmp != Engine::CurrentCamera.Pinned) {
+            tmp = slf_cmp->GetGlobalPosition();
+            
+        } else {
+            tmp = slf_cmp->Rect;
         }
 
         if (slf_cmp->TextureID != -1) {
             SDL_SetRenderDrawColor(Engine::Renderer, 10, 10, 10, SDL_ALPHA_TRANSPARENT);
-            SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
-            SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], &slf_cmp->SrcRect, &slf_cmp->Rect);
+            SDL_RenderFillRect(Engine::Renderer, &tmp);
+            SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], &slf_cmp->SrcRect, &tmp);
         } else {
             SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(Engine::Renderer, &slf_cmp->Rect);
+            SDL_RenderFillRect(Engine::Renderer, &tmp);
         }
     }
 }
 
 bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
     for (const auto &slf_cmp : this->Components) {
-        if (SDL_HasIntersection(&slf_cmp->Rect, ComponentRect)) {
+        SDL_Rect tmp_cmp_rct = slf_cmp->GetGlobalPosition();
+
+        if (SDL_HasIntersection(&tmp_cmp_rct, ComponentRect)) {
             return true;
         }
     }
@@ -463,13 +474,12 @@ Engine::Camera::Camera() {
 }
 
 void Engine::Camera::Update() {
-    this->OffSetX += (int) this->Pinned->DirectionX;
-    this->OffSetY += (int) this->Pinned->DirectionY;
+    this->OffSetX -= this->Pinned->DirectionX;
+    this->OffSetY -= this->Pinned->DirectionY;
 }
 
-void Engine::Camera::Linear() {
-    this->OffSetX += ((this->Pinned->Rect.x) - this->OffSetX);
-    this->OffSetY += ((this->Pinned->Rect.y) - this->OffSetY);
+void Engine::Camera::Linear(float delta_time) {
+
 }
 
 // Signal:Class
