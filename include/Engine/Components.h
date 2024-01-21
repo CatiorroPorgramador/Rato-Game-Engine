@@ -126,11 +126,15 @@ namespace Engine {
     };
 
     class TileMap : public GameComponent {
+        
+
     public:
         TileMap();
         TileMap(int width, int height);
 
         void Render() override;
+
+        void SetTile(int, int, int);
     };
 
     class Signal {

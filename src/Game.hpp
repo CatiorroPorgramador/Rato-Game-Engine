@@ -48,6 +48,7 @@ namespace Engine {
             player.Init();
 
             player_group.Components.push_back(&player);
+
             test_group.Components.push_back(&test);
             test_group.Components.push_back(&test2);
 
@@ -61,9 +62,17 @@ namespace Engine {
             Engine::Musics.push_back(Mix_LoadMUS("data/sounds/Beginner's Sound.mp3"));
             Mix_VolumeMusic(2);
 
+            SDL_Surface *surf = IMG_Load("data/Worlds/Common/simple-house.png");
+            Engine::TexturesIDs.push_back(SDL_CreateTextureFromSurface(Engine::Renderer, surf));
+            SDL_FreeSurface(surf);
+
             test.Rect = SDL_Rect {400, 0, 200, 200};
+            test.TextureID = 1;
+            test.SrcRect = {0, 0, 48, 48};
 
             test2.Rect = SDL_Rect{0, 0, 200, 200};
+            test2.TextureID = 1;
+            test2.SrcRect = {0, 0, 48, 48};
 
             Engine::CurrentGroups["Player"] = player_group;
             Engine::CurrentGroups["Test"] = test_group;

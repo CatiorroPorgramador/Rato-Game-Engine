@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 
         default_scene->Update(delta_time);
 
-        SDL_SetRenderDrawColor(renderer, 25, 25, 25, 255);
+        SDL_SetRenderDrawColor(renderer, 60, 255, 60, 255);
         SDL_RenderClear(renderer);
 
         ImGui_ImplSDLRenderer2_NewFrame();

@@ -392,8 +392,8 @@ void Engine::Group::Render() {
         }
 
         if (slf_cmp->TextureID != -1) {
-            SDL_SetRenderDrawColor(Engine::Renderer, 10, 10, 10, SDL_ALPHA_TRANSPARENT);
-            SDL_RenderFillRect(Engine::Renderer, &tmp);
+            //SDL_SetRenderDrawColor(Engine::Renderer, 10, 10, 10, SDL_ALPHA_TRANSPARENT);
+            //SDL_RenderFillRect(Engine::Renderer, &tmp);
             SDL_RenderCopy(Engine::Renderer, Engine::TexturesIDs[slf_cmp->TextureID], &slf_cmp->SrcRect, &tmp);
         } else {
             SDL_SetRenderDrawColor(Engine::Renderer, 255, 255, 255, 255);
