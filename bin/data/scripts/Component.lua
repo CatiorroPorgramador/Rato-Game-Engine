@@ -5,7 +5,7 @@ GameComponent = {
     Rect = {0, 0, 64, 64},
     DirectionX = 0,
     DirectionY = 0,
-    TextureID = Engine.LoadTextureID('data/Skins/monkey-sheet.png'),
+    TextureID = Engine.LoadTextureID('data/Skins/soldier-sheet.png'),
     
     speed = 200.0,
 
