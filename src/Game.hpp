@@ -11,12 +11,13 @@ namespace Engine {
         Engine::AnimationManager *animation_manager;
 
         Player() {
-            src
+            this->SrcRect.w = 32;
+            this->SrcRect.h = 32;
             animation_manager = new Engine::AnimationManager(&this->SrcRect);
-            animation_manager->CreateAnimation("Vorta", {0, 1, 2, 3, 4});
+            animation_manager->CreateAnimation("Vorta", {1, 2});
             animation_manager->Loop = true;
             animation_manager->Play("Vorta");
-            animation_manager->SetAnimationSpeed(1.0f);
+            animation_manager->SetAnimationSpeed(0.5f);
         }
 
         ~Player() {

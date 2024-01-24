@@ -100,13 +100,13 @@ namespace Engine {
     private:
         bool p = false; // Playing Some Animation
 
-        Uint32 las_tim; // Last Time
+        Uint64 las_tim; // Last Time
 
         float at = 1.0f; // Animation Time in ms
 
         int f = 0;  // Animation Frame, Index Animation
         int_fast8_t fr = 0; // Reference Animation Frame
-        int_fast8_t jmp = 16; // Size of unique sprite to jump
+        int_fast8_t jmp = 32; // Size of unique sprite to jump
         std::vector<int_fast8_t> anim;
 
         std::unordered_map<const char*, std::vector<int_fast8_t>> anims;

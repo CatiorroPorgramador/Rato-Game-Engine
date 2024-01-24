@@ -417,20 +417,20 @@ bool Engine::Group::CheckCollision(SDL_Rect *ComponentRect) {
 Engine::AnimationManager::AnimationManager(SDL_Rect* sheet) {
     this->s = sheet;
     this->Loop = false;
+    this->jmp = 32;
 
-    this->las_tim = SDL_GetTicks();
+    this->las_tim = SDL_GetTicks64();
 }
 
 void Engine::AnimationManager::Update(float delta_time) {
     if (p) {
-        Uint32 cur_tim = SDL_GetTicks();
-
+        Uint64 cur_tim = SDL_GetTicks64();
         if ((cur_tim - this->las_tim) >= this->at*1000.f) {
             this->fr++;
             this->f = this->anim[fr];
             
             this->las_tim = cur_tim;
-            this->s->x = this->f*this->jmp;
+            this->s->x = this->anim[fr]*32;
         }
         if (fr > anim.size()-1) { // Animation Finished
             this->Finished = this->Name;
@@ -438,7 +438,7 @@ void Engine::AnimationManager::Update(float delta_time) {
             this->fr = 0;
             
             this->las_tim = cur_tim;
-            this->s->x = this->f*this->jmp; 
+            this->s->x = this->anim[fr]*32;
         }
     }
 }
@@ -448,6 +448,8 @@ void Engine::AnimationManager::Play(const char* name) {
         this->p = true;
         this->anim = anims[name];
         this->Name = std::string(name);
+        this->f = this->anims[name][0];
+        this->s->x = this->anim[fr]*32;
     }
 }
 

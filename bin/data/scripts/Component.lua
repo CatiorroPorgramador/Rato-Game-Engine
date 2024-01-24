@@ -2,7 +2,7 @@ Engine.LoadDefaultLibraries()
 
 GameComponent = {
     Alive = true,
-    Rect = {0, 0, 64, 64},
+    Rect = {0, 0, 32*3, 32*3},
     DirectionX = 0,
     DirectionY = 0,
     TextureID = Engine.LoadTextureID('data/Skins/soldier-sheet.png'),
